@@ -1,0 +1,63 @@
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+using namespace std;
+
+double getxE(double xS, double R, double theta) {
+	double xIncrement = R*cos(theta);
+	return xS+xIncrement;
+}
+
+double getyE(double yS, double R, double theta) {
+	double yIncrement = R*sin(theta);
+	return yS+yIncrement;
+}
+
+bool equals(double value1,double value2, double tolerance) {
+	return fabs(value1-value2)<=tolerance;
+}
+
+bool isUseful(double x1, double y1, double x2, double y2) {
+	double deltax=x2-x1;
+	double deltay=y2-y1;
+	const double X_TOL = 2;
+	const double Y_TOL = 0.75;
+
+	return (equals(deltax,31,X_TOL) and equals(deltay,23,Y_TOL)) ;
+}
+
+void printEndPoint(double x1, double y1, double L, double R1, double R2, double theta2) {
+	const double LENGTH_TOL = 5E-4;
+	double cos_theta1 = (pow(L,2)+pow(20,2)-pow(33,2))/(40*L); // cos law
+	double theta1 = 0;
+	if (cos_theta1>=0) 
+		theta1 = acos(cos_theta1);
+	else
+		theta1 = M_PI - acos(cos_theta1);
+	double x2 = R1*cos(theta1) + R2*cos(theta2);
+	double y2 = R1*sin(theta1) + R2*sin(theta2);
+
+	if ((y2+LENGTH_TOL>=0) and isUseful(x1,y1,x2,y2)) {
+		cout << "L="<<L<<", R1="<<R1<<", R2="<<R2<<", theta2="<<theta2
+			<<". \nx1="<<x1<<", y1="<<y1<<". x2="<<x2<<", y2="<<y2<<".\n\n";
+	}
+}
+
+
+int main() {
+	const double ANGLE_STEP_SIZE = 0.04;
+	const double LENGTH_STEP_SIZE = 1.6; //in cm
+
+	for (double R1 = 15*LENGTH_STEP_SIZE; R1 <= 35; R1+=LENGTH_STEP_SIZE) {
+		for (double L = 11*LENGTH_STEP_SIZE; L<=R1; L+=LENGTH_STEP_SIZE) {
+			for (double R2 = 5*LENGTH_STEP_SIZE; R2 <=35;
+				 R2+=LENGTH_STEP_SIZE) {
+				for (double theta2 = -M_PI/2; theta2<=M_PI/2;
+					theta2+=ANGLE_STEP_SIZE) {
+					printEndPoint(0,0,L,R1,R2,theta2);	
+				}
+			}
+		}
+	}
+	return 0;
+}
